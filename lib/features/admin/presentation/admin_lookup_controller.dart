@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../courses/data/course_models.dart';
 import '../../courses/presentation/course_controller.dart';
 import '../data/admin_lookup_api.dart';
@@ -13,7 +14,7 @@ final adminLookupControllerProvider =
     AsyncNotifierProvider<AdminLookupController, AdminLookupState>(
       AdminLookupController.new,
     );
-
+ 
 class AdminLookupState {
   const AdminLookupState({required this.categories, required this.tags});
 
@@ -24,6 +25,7 @@ class AdminLookupState {
 class AdminLookupController extends AsyncNotifier<AdminLookupState> {
   @override
   Future<AdminLookupState> build() {
+    ref.watch(authControllerProvider);
     return _load();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../cart/presentation/cart_controller.dart';
 import '../../learning/presentation/enrollment_controller.dart';
 import '../data/order_api.dart';
@@ -18,6 +19,7 @@ final orderControllerProvider =
 class OrderController extends AsyncNotifier<List<OrderModel>> {
   @override
   Future<List<OrderModel>> build() async {
+    ref.watch(authControllerProvider);
     final page = await ref.read(orderApiProvider).orders();
     return page.content;
   }

@@ -8,6 +8,7 @@ import '../../../core/widgets/course_card.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/loading_view.dart';
 import '../../auth/presentation/auth_controller.dart';
+import '../../courses/data/course_models.dart';
 import '../../courses/presentation/course_controller.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -19,7 +20,10 @@ class HomeScreen extends ConsumerWidget {
     final user = auth.hasValue ? auth.requireValue : null;
     final categories = ref.watch(categoriesProvider);
     final featured = ref.watch(featuredCoursesProvider);
-    final courses = ref.watch(courseListControllerProvider);
+    final bestSellers = ref.watch(bestSellerCoursesProvider);
+    final topRated = ref.watch(topRatedCoursesProvider);
+    final newCourses = ref.watch(newCoursesProvider);
+    final popular = ref.watch(popularCoursesProvider);
 
     return Scaffold(
       body: SafeArea(
@@ -27,6 +31,10 @@ class HomeScreen extends ConsumerWidget {
           onRefresh: () async {
             ref.invalidate(categoriesProvider);
             ref.invalidate(featuredCoursesProvider);
+            ref.invalidate(bestSellerCoursesProvider);
+            ref.invalidate(topRatedCoursesProvider);
+            ref.invalidate(newCoursesProvider);
+            ref.invalidate(popularCoursesProvider);
             await ref.read(courseListControllerProvider.notifier).refresh();
           },
           child: CustomScrollView(
@@ -123,69 +131,89 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               SliverToBoxAdapter(
-                child: featured.when(
-                  data: (items) => items.isEmpty
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: _InlineEmpty(
-                            icon: Icons.star_outline,
-                            text: 'Backend chua co khoa hoc noi bat.',
-                          ),
-                        )
-                      : SizedBox(
-                          height: 310,
-                          child: ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            primary: false,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: items.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(width: 12),
-                            itemBuilder: (context, index) => CourseCard(
-                              course: items[index],
-                              compact: true,
-                              onTap: () => context.push(
-                                RouteNames.courseDetail(items[index].id),
-                              ),
-                            ),
-                          ),
-                        ),
-                  error: (error, _) => ErrorView(message: error.toString()),
-                  loading: () =>
-                      const SizedBox(height: 180, child: LoadingView()),
+                child: _HorizontalCourseList(
+                  coursesAsync: featured,
+                  emptyText: 'Backend chua co khoa hoc noi bat.',
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 10),
+                  child: _SectionTitle(
+                    title: 'Mua nhieu nhat',
+                    action: 'Xem them',
+                    onTap: () => context.push('${RouteNames.courses}?sort=best_seller'),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _HorizontalCourseList(
+                  coursesAsync: bestSellers,
+                  emptyText: 'Chua co khoa hoc ban chay.',
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 10),
+                  child: _SectionTitle(
+                    title: 'Danh gia cao nhat',
+                    action: 'Xem them',
+                    onTap: () => context.push('${RouteNames.courses}?sort=rating'),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _HorizontalCourseList(
+                  coursesAsync: topRated,
+                  emptyText: 'Chua co khoa hoc danh gia cao.',
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 22, 20, 10),
+                  child: _SectionTitle(
+                    title: 'Khoa hoc moi',
+                    action: 'Xem them',
+                    onTap: () => context.push('${RouteNames.courses}?sort=newest'),
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _HorizontalCourseList(
+                  coursesAsync: newCourses,
+                  emptyText: 'Chua co khoa hoc moi.',
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 22, 20, 8),
                   child: _SectionTitle(
-                    title: 'Pho bien',
+                    title: 'Pho bien nhat',
                     action: 'Tat ca',
-                    onTap: () => context.push(RouteNames.courses),
+                    onTap: () => context.push('${RouteNames.courses}?sort=popular'),
                   ),
                 ),
               ),
-              courses.when(
-                data: (state) => state.courses.isEmpty
+              popular.when(
+                data: (items) => items.isEmpty
                     ? const SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: _InlineEmpty(
                             icon: Icons.menu_book_outlined,
-                            text: 'Backend chua co khoa hoc published.',
+                            text: 'Chua co khoa hoc pho bien.',
                           ),
                         ),
                       )
                     : SliverList.separated(
-                        itemCount: state.courses.take(5).length,
+                        itemCount: items.take(5).length,
                         separatorBuilder: (_, _) => const SizedBox(height: 8),
                         itemBuilder: (context, index) => Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: CourseCard(
-                            course: state.courses[index],
+                            course: items[index],
                             onTap: () => context.push(
-                              RouteNames.courseDetail(state.courses[index].id),
+                              RouteNames.courseDetail(items[index].id),
                             ),
                           ),
                         ),
@@ -193,7 +221,7 @@ class HomeScreen extends ConsumerWidget {
                 error: (error, _) => SliverToBoxAdapter(
                   child: ErrorView(
                     message: error.toString(),
-                    onRetry: () => ref.invalidate(courseListControllerProvider),
+                    onRetry: () => ref.invalidate(popularCoursesProvider),
                   ),
                 ),
                 loading: () => const SliverToBoxAdapter(child: LoadingView()),
@@ -295,6 +323,53 @@ class _SectionTitle extends StatelessWidget {
         ),
         TextButton(onPressed: onTap, child: Text(action)),
       ],
+    );
+  }
+}
+
+class _HorizontalCourseList extends StatelessWidget {
+  const _HorizontalCourseList({
+    required this.coursesAsync,
+    required this.emptyText,
+  });
+
+  final AsyncValue<List<CourseSummary>> coursesAsync;
+  final String emptyText;
+
+  @override
+  Widget build(BuildContext context) {
+    return coursesAsync.when(
+      data: (items) => items.isEmpty
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _InlineEmpty(
+                icon: Icons.star_outline,
+                text: emptyText,
+              ),
+            )
+          : SizedBox(
+              height: 310,
+              child: ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                physics: const AlwaysScrollableScrollPhysics(),
+                primary: false,
+                scrollDirection: Axis.horizontal,
+                itemCount: items.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder: (context, index) => CourseCard(
+                  course: items[index],
+                  compact: true,
+                  onTap: () => context.push(
+                    RouteNames.courseDetail(items[index].id),
+                  ),
+                ),
+              ),
+            ),
+      error: (error, _) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ErrorView(message: error.toString()),
+      ),
+      loading: () => const SizedBox(height: 180, child: LoadingView()),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../courses/data/course_models.dart';
 import '../data/admin_content_api.dart';
 
@@ -20,6 +21,7 @@ class AdminContentController extends AsyncNotifier<CourseDetail> {
 
   @override
   Future<CourseDetail> build() {
+    ref.watch(authControllerProvider);
     return ref.read(adminContentApiProvider).findCourse(courseId);
   }
 

@@ -11,4 +11,6 @@ class ApiConstants {
   static const featuredCourses = '/api/courses/featured';
   static const categories = '/api/categories';
   static String courseDetail(String id) => '/api/courses/$id';
+  static String courseReviews(String courseId) => '/api/courses/$courseId/reviews';
+  static String reviewAction(String reviewId) => '/api/reviews/$reviewId';
 }

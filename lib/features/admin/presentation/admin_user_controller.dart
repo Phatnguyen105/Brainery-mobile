@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/admin_user_api.dart';
 import '../data/admin_user_models.dart';
 
@@ -16,6 +17,7 @@ final adminUserControllerProvider =
 class AdminUserController extends AsyncNotifier<List<AdminUserModel>> {
   @override
   Future<List<AdminUserModel>> build() async {
+    ref.watch(authControllerProvider);
     final page = await ref.read(adminUserApiProvider).users();
     return page.content;
   }

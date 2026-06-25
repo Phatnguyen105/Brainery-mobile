@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/cart_api.dart';
 import '../data/cart_models.dart';
 
@@ -15,6 +16,7 @@ final cartControllerProvider = AsyncNotifierProvider<CartController, CartModel>(
 class CartController extends AsyncNotifier<CartModel> {
   @override
   Future<CartModel> build() async {
+    ref.watch(authControllerProvider);
     return ref.read(cartApiProvider).findCart();
   }
 

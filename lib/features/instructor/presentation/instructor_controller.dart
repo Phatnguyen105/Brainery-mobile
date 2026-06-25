@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../courses/data/course_models.dart';
 import '../../courses/presentation/course_controller.dart';
 import '../data/instructor_api.dart';
@@ -16,12 +17,14 @@ final instructorCourseControllerProvider =
 
 final instructorCourseDetailProvider =
     FutureProvider.family<CourseDetail, String>((ref, courseId) {
+      ref.watch(authControllerProvider);
       return ref.watch(instructorApiProvider).findCourse(courseId);
     });
 
 class InstructorCourseController extends AsyncNotifier<List<CourseSummary>> {
   @override
   Future<List<CourseSummary>> build() {
+    ref.watch(authControllerProvider);
     return ref.read(instructorApiProvider).listCourses();
   }
 
