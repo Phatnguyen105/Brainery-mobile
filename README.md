@@ -27,6 +27,21 @@ All data access is handled securely through the Backend API.
 - Offline lesson download support
 - User profile management
 
+## Local Login Accounts
+
+These accounts are seeded by the backend migration
+`Brainery-backend/Brainery/src/main/resources/db/migration/V14__seed_demo_login_accounts.sql`.
+
+| Role | Email | Password |
+| --- | --- | --- |
+| User / Student | `student@brainery.local` | `Admin@123` |
+| Instructor | `instructor@brainery.local` | `Admin@123` |
+| Admin | `admin@brainery.local` | `Admin@123` |
+
+If the emulator still shows `Invalid credentials`, restart the Spring Boot backend so Flyway can run the new migration, then run the mobile app again.
+
+Instructor accounts open the `Instructor` workspace after login. From there you can create courses, add sections, add lessons, and create quizzes for lessons.
+
 ## Suggested Tech Stack
 
 Depending on the implementation direction, this project can be built with:
