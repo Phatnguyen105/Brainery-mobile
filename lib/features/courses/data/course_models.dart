@@ -232,3 +232,35 @@ List<Object?> _readList(Object? value) {
   if (value is List) return value;
   return const [];
 }
+
+class ReviewModel {
+  const ReviewModel({
+    required this.id,
+    required this.courseId,
+    required this.userEmail,
+    required this.rating,
+    required this.content,
+    required this.createdAt,
+  });
+
+  final String id;
+  final String courseId;
+  final String userEmail;
+  final int rating;
+  final String content;
+  final DateTime createdAt;
+
+  factory ReviewModel.fromJson(Object? json) {
+    final map = json is Map<String, dynamic> ? json : <String, dynamic>{};
+    return ReviewModel(
+      id: map['id']?.toString() ?? '',
+      courseId: map['courseId']?.toString() ?? '',
+      userEmail: map['userEmail']?.toString() ?? '',
+      rating: int.tryParse(map['rating']?.toString() ?? '') ?? 5,
+      content: map['content']?.toString() ?? '',
+      createdAt: map['createdAt'] != null
+          ? DateTime.tryParse(map['createdAt'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+    );
+  }
+}

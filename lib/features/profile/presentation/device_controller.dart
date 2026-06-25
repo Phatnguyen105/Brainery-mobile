@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/storage/token_storage.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/device_api.dart';
 import '../data/device_models.dart';
 
@@ -20,6 +21,7 @@ final deviceControllerProvider =
 class DeviceController extends AsyncNotifier<List<DeviceModel>> {
   @override
   Future<List<DeviceModel>> build() {
+    ref.watch(authControllerProvider);
     return ref.read(deviceApiProvider).devices();
   }
 

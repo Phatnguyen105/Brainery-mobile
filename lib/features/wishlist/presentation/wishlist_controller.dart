@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../courses/data/course_models.dart';
 import '../data/wishlist_api.dart';
 
@@ -16,6 +17,7 @@ final wishlistControllerProvider =
 class WishlistController extends AsyncNotifier<List<CourseSummary>> {
   @override
   Future<List<CourseSummary>> build() async {
+    ref.watch(authControllerProvider);
     return ref.read(wishlistApiProvider).findWishlist();
   }
 

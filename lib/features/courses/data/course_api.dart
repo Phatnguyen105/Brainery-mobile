@@ -13,6 +13,7 @@ class CourseApi {
     String? level,
     double? minPrice,
     double? maxPrice,
+    String? sort,
     int page = 0,
     int size = 10,
   }) {
@@ -24,6 +25,7 @@ class CourseApi {
         'level': level,
         'minPrice': minPrice,
         'maxPrice': maxPrice,
+        'sort': sort,
         'page': page,
         'size': size,
       }..removeWhere((_, value) => value == null || value == ''),
@@ -51,6 +53,58 @@ class CourseApi {
       ApiConstants.categories,
       parse: (json) =>
           (json is List ? json : const []).map(CategoryModel.fromJson).toList(),
+    );
+  }
+
+  Future<PageResult<ReviewModel>> findCourseReviews(
+    String courseId, {
+    int page = 0,
+    int size = 10,
+  }) {
+    return _client.getData<PageResult<ReviewModel>>(
+      ApiConstants.courseReviews(courseId),
+      queryParameters: {
+        'page': page,
+        'size': size,
+      },
+      parse: (json) => PageResult.fromJson(json, ReviewModel.fromJson),
+    );
+  }
+
+  Future<ReviewModel> createReview(
+    String courseId, {
+    required int rating,
+    required String content,
+  }) {
+    return _client.postData<ReviewModel>(
+      ApiConstants.courseReviews(courseId),
+      data: {
+        'rating': rating,
+        'content': content,
+      },
+      parse: ReviewModel.fromJson,
+    );
+  }
+
+  Future<ReviewModel> updateReview(
+    String reviewId, {
+    required int rating,
+    required String content,
+  }) {
+    return _client.putData<ReviewModel>(
+      ApiConstants.reviewAction(reviewId),
+      data: {
+        'rating': rating,
+        'content': content,
+      },
+      parse: ReviewModel.fromJson,
+    );
+  }
+
+  Future<void> deleteReview(String reviewId) {
+    return _client.deleteData<void>(
+      ApiConstants.reviewAction(reviewId),
+      parse: (_) {},
     );
   }
 }

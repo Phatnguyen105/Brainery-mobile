@@ -6,12 +6,16 @@ class EnrollmentStatusModel {
     this.status,
     this.progress = 0,
     this.enrolledAt,
+    this.lastLessonId,
+    this.lastLessonTitle,
   });
 
   final String courseId;
   final String? status;
   final double progress;
   final String? enrolledAt;
+  final String? lastLessonId;
+  final String? lastLessonTitle;
 
   bool get isEnrolled => status != null && status!.isNotEmpty;
 
@@ -22,6 +26,8 @@ class EnrollmentStatusModel {
       status: map['status']?.toString(),
       progress: double.tryParse(map['progress']?.toString() ?? '') ?? 0,
       enrolledAt: map['enrolledAt']?.toString(),
+      lastLessonId: map['lastLessonId']?.toString(),
+      lastLessonTitle: map['lastLessonTitle']?.toString(),
     );
   }
 }

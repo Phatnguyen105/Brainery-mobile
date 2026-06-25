@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/error_view.dart';
 import '../../../core/widgets/loading_view.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../cart/presentation/cart_controller.dart';
 import '../../learning/presentation/enrollment_controller.dart';
 import '../../orders/presentation/order_controller.dart';
@@ -240,7 +241,13 @@ class _CourseDetailContent extends ConsumerWidget {
                   courseId: course.id,
                 ),
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: 20)),
+        SliverToBoxAdapter(
+          child: _ReviewsSection(
+            courseId: course.id,
+            isEnrolled: isEnrolled,
+          ),
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
     );
   }
@@ -420,5 +427,434 @@ String _formatLevel(String level) {
       return 'Nang cao';
     default:
       return level;
+  }
+}
+
+class _ReviewsSection extends ConsumerWidget {
+  const _ReviewsSection({
+    required this.courseId,
+    required this.isEnrolled,
+  });
+
+  final String courseId;
+  final bool isEnrolled;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final reviewsAsync = ref.watch(courseReviewsProvider(courseId));
+    final auth = ref.watch(authControllerProvider);
+    final currentUserEmail = auth.value?.email;
+    final reviewActionLoading = ref.watch(reviewActionProvider).isLoading;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Divider(height: 40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Danh gia tu hoc vien',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          reviewsAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, _) => Text('Loi tai danh gia: $error'),
+            data: (page) {
+              final reviews = page.content;
+              final existingReview = currentUserEmail == null
+                  ? null
+                  : reviews.where((r) => r.userEmail.toLowerCase() == currentUserEmail.toLowerCase()).firstOrNull;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Review Stats Summary
+                  if (reviews.isNotEmpty) ...[
+                    _buildStatsSummary(context, reviews),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Action for enrolled user
+                  if (isEnrolled && currentUserEmail != null) ...[
+                    if (existingReview == null) ...[
+                      Center(
+                        child: OutlinedButton.icon(
+                          onPressed: reviewActionLoading
+                              ? null
+                              : () => _showReviewDialog(context, ref, courseId: courseId),
+                          icon: const Icon(Icons.rate_review_outlined),
+                          label: const Text('Viet danh gia cho khoa hoc nay'),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ] else ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Danh gia cua ban:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primaryDark,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            _buildReviewCard(context, ref, existingReview, isCurrentUser: true),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ],
+
+                  // Reviews List
+                  if (reviews.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: Text(
+                          'Chua co danh gia nao cho khoa hoc nay. Hay la nguoi dau tien danh gia!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
+                        ),
+                      ),
+                    )
+                  else
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: reviews.length,
+                      separatorBuilder: (_, __) => const Divider(height: 24),
+                      itemBuilder: (context, index) {
+                        final review = reviews[index];
+                        // Skip if it's the current user's review as we displayed it separately above
+                        if (existingReview != null && review.id == existingReview.id) {
+                          return const SizedBox.shrink();
+                        }
+                        return _buildReviewCard(context, ref, review, isCurrentUser: false);
+                      },
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsSummary(BuildContext context, List<ReviewModel> reviews) {
+    final double avg = reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              avg.toStringAsFixed(1),
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: AppColors.primaryDark),
+            ),
+            Row(
+              children: List.generate(
+                5,
+                (i) => Icon(
+                  i < avg.round() ? Icons.star : Icons.star_border,
+                  color: Colors.amber,
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${reviews.length} xep hang',
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewCard(
+    BuildContext context,
+    WidgetRef ref,
+    ReviewModel review, {
+    required bool isCurrentUser,
+  }) {
+    final dateStr = DateFormat('dd/MM/yyyy').format(review.createdAt);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.line,
+                  child: Text(
+                    review.userEmail.isNotEmpty
+                        ? review.userEmail.characters.first.toUpperCase()
+                        : 'B',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.userEmail.split('@').first,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      dateStr,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            if (isCurrentUser)
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit_outlined, size: 20, color: AppColors.primary),
+                    onPressed: () => _showReviewDialog(
+                      context,
+                      ref,
+                      courseId: courseId,
+                      existingReview: review,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                    onPressed: () => _showDeleteConfirmation(context, ref, review),
+                  ),
+                ],
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: List.generate(
+            5,
+            (i) => Icon(
+              i < review.rating ? Icons.star : Icons.star_border,
+              color: Colors.amber,
+              size: 16,
+            ),
+          ),
+        ),
+        if (review.content.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Text(review.content, style: const TextStyle(height: 1.4)),
+        ],
+      ],
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref, ReviewModel review) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xoa danh gia'),
+        content: const Text('Ban co chac chan muon xoa danh gia nay khong?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Huy'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            onPressed: () async {
+              Navigator.pop(context);
+              await ref.read(reviewActionProvider.notifier).deleteReview(courseId, review.id);
+            },
+            child: const Text('Xoa'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _showReviewDialog(
+  BuildContext context,
+  WidgetRef ref, {
+  required String courseId,
+  ReviewModel? existingReview,
+}) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return _ReviewSubmitBottomSheet(
+        courseId: courseId,
+        existingReview: existingReview,
+      );
+    },
+  );
+}
+
+class _ReviewSubmitBottomSheet extends ConsumerStatefulWidget {
+  const _ReviewSubmitBottomSheet({
+    required this.courseId,
+    this.existingReview,
+  });
+
+  final String courseId;
+  final ReviewModel? existingReview;
+
+  @override
+  ConsumerState<_ReviewSubmitBottomSheet> createState() => _ReviewSubmitBottomSheetState();
+}
+
+class _ReviewSubmitBottomSheetState extends ConsumerState<_ReviewSubmitBottomSheet> {
+  int _rating = 5;
+  final _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.existingReview != null) {
+      _rating = widget.existingReview!.rating;
+      _commentController.text = widget.existingReview!.content;
+    }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = ref.watch(reviewActionProvider).isLoading;
+    final isEdit = widget.existingReview != null;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isEdit ? 'Chinh sua danh gia' : 'Danh gia khoa hoc',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Star rating Row selector
+          Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(5, (index) {
+                final score = index + 1;
+                return IconButton(
+                  icon: Icon(
+                    score <= _rating ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                    size: 40,
+                  ),
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          setState(() {
+                            _rating = score;
+                          });
+                        },
+                );
+              }),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Comment box
+          TextField(
+            controller: _commentController,
+            maxLines: 4,
+            decoration: const InputDecoration(
+              hintText: 'Hay chia se cam nghi cua ban ve khoa hoc nay...',
+              border: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: AppColors.primary, width: 2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Submit Button
+          AppButton(
+            label: isEdit ? 'Cap nhat' : 'Gui danh gia',
+            isLoading: isLoading,
+            onPressed: () async {
+              if (isEdit) {
+                await ref.read(reviewActionProvider.notifier).updateReview(
+                      widget.courseId,
+                      widget.existingReview!.id,
+                      rating: _rating,
+                      content: _commentController.text.trim(),
+                    );
+              } else {
+                await ref.read(reviewActionProvider.notifier).createReview(
+                      widget.courseId,
+                      rating: _rating,
+                      content: _commentController.text.trim(),
+                    );
+              }
+              final state = ref.read(reviewActionProvider);
+              if (state.hasError) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.error.toString())),
+                  );
+                }
+              } else {
+                if (mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(isEdit ? 'Cap nhat thanh cong!' : 'Gui danh gia thanh cong! Cam on ban.'),
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../data/course_api.dart';
 import '../data/course_models.dart';
 
@@ -23,6 +24,90 @@ final courseDetailProvider = FutureProvider.family<CourseDetail, String>((
 ) {
   return ref.watch(courseApiProvider).findCourse(courseId);
 });
+
+final topRatedCoursesProvider = FutureProvider<List<CourseSummary>>((ref) async {
+  ref.watch(authControllerProvider);
+  final page = await ref.watch(courseApiProvider).searchCourses(sort: 'rating', size: 10);
+  return page.content;
+});
+
+final bestSellerCoursesProvider = FutureProvider<List<CourseSummary>>((ref) async {
+  ref.watch(authControllerProvider);
+  final page = await ref.watch(courseApiProvider).searchCourses(sort: 'best_seller', size: 10);
+  return page.content;
+});
+
+final newCoursesProvider = FutureProvider<List<CourseSummary>>((ref) async {
+  ref.watch(authControllerProvider);
+  final page = await ref.watch(courseApiProvider).searchCourses(sort: 'newest', size: 10);
+  return page.content;
+});
+
+final popularCoursesProvider = FutureProvider<List<CourseSummary>>((ref) async {
+  ref.watch(authControllerProvider);
+  final page = await ref.watch(courseApiProvider).searchCourses(sort: 'popular', size: 10);
+  return page.content;
+});
+
+final courseReviewsProvider =
+    FutureProvider.family<PageResult<ReviewModel>, String>((ref, courseId) {
+      ref.watch(authControllerProvider);
+      return ref.watch(courseApiProvider).findCourseReviews(courseId);
+    });
+
+final reviewActionProvider =
+    AsyncNotifierProvider<ReviewActionController, void>(
+      ReviewActionController.new,
+    );
+
+class ReviewActionController extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> createReview(
+    String courseId, {
+    required int rating,
+    required String content,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(courseApiProvider).createReview(
+        courseId,
+        rating: rating,
+        content: content,
+      );
+      ref.invalidate(courseReviewsProvider(courseId));
+      ref.invalidate(courseDetailProvider(courseId));
+    });
+  }
+
+  Future<void> updateReview(
+    String courseId,
+    String reviewId, {
+    required int rating,
+    required String content,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(courseApiProvider).updateReview(
+        reviewId,
+        rating: rating,
+        content: content,
+      );
+      ref.invalidate(courseReviewsProvider(courseId));
+      ref.invalidate(courseDetailProvider(courseId));
+    });
+  }
+
+  Future<void> deleteReview(String courseId, String reviewId) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref.read(courseApiProvider).deleteReview(reviewId);
+      ref.invalidate(courseReviewsProvider(courseId));
+      ref.invalidate(courseDetailProvider(courseId));
+    });
+  }
+}
 
 final courseListControllerProvider =
     AsyncNotifierProvider<CourseListController, CourseListState>(

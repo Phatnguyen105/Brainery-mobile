@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../auth/presentation/auth_controller.dart';
 import '../../courses/data/course_models.dart';
 import '../../courses/presentation/course_controller.dart';
 import '../data/admin_course_api.dart';
@@ -19,6 +20,7 @@ class AdminCourseController extends AsyncNotifier<List<CourseSummary>> {
 
   @override
   Future<List<CourseSummary>> build() async {
+    ref.watch(authControllerProvider);
     return ref.read(adminCourseApiProvider).listCourses(status: _status);
   }
 

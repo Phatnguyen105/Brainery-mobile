@@ -113,8 +113,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/courses/:courseId/learn',
-        builder: (context, state) =>
-            CoursePlayerScreen(courseId: state.pathParameters['courseId']!),
+        builder: (context, state) => CoursePlayerScreen(
+          courseId: state.pathParameters['courseId']!,
+          initialLessonId: state.uri.queryParameters['lessonId'],
+        ),
       ),
     ],
   );
