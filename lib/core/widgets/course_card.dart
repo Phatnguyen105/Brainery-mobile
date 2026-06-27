@@ -26,7 +26,7 @@ class CourseCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Card(
         child: compact
             ? SizedBox(
@@ -65,7 +65,7 @@ class _CourseImage extends StatelessWidget {
     return AspectRatio(
       aspectRatio: 16 / 9,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         child: url == null || url!.isEmpty
             ? Container(
                 color: AppColors.primary,
@@ -128,7 +128,7 @@ class _CourseInfo extends StatelessWidget {
                 Text(course.averageRating.toStringAsFixed(1)),
               ],
             ),
-            Text('${course.totalReviews} danh gia'),
+            Text('${course.totalReviews} đánh giá'),
             Text(_formatLevel(course.level)),
           ],
         ),
@@ -136,7 +136,7 @@ class _CourseInfo extends StatelessWidget {
         owned
             ? const _OwnedPill()
             : Text(
-                course.isFree ? 'Mien phi' : formatter.format(course.price),
+                course.isFree ? 'Miễn phí' : formatter.format(course.price),
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
       ],
@@ -157,7 +157,7 @@ class _OwnedPill extends StatelessWidget {
       child: const Padding(
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Text(
-          'Da so huu',
+          'Đã sở hữu',
           style: TextStyle(
             color: AppColors.primaryDark,
             fontWeight: FontWeight.w800,
@@ -171,11 +171,11 @@ class _OwnedPill extends StatelessWidget {
 String _formatLevel(String level) {
   switch (level.toUpperCase()) {
     case 'BEGINNER':
-      return 'Co ban';
+      return 'Cơ bản';
     case 'INTERMEDIATE':
-      return 'Trung cap';
+      return 'Trung cấp';
     case 'ADVANCED':
-      return 'Nang cao';
+      return 'Nâng cao';
     default:
       return level;
   }

@@ -27,7 +27,7 @@ class CourseDetailScreen extends ConsumerWidget {
     final detail = ref.watch(courseDetailProvider(courseId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiet khoa hoc')),
+      appBar: AppBar(title: const Text('Chi tiết khóa học')),
       body: SafeArea(
         child: detail.when(
           data: (course) => _CourseDetailContent(course: course),
@@ -102,8 +102,8 @@ class _CourseDetailContent extends ConsumerWidget {
                       runSpacing: 8,
                       children: [
                         _Pill(label: _formatLevel(course.level)),
-                        if (course.isFeatured) const _Pill(label: 'Noi bat'),
-                        if (course.isFree) const _Pill(label: 'Mien phi'),
+                        if (course.isFeatured) const _Pill(label: 'Nổi bật'),
+                        if (course.isFree) const _Pill(label: 'Miễn phí'),
                       ],
                     ),
                     const SizedBox(height: 14),
@@ -115,7 +115,7 @@ class _CourseDetailContent extends ConsumerWidget {
                     Text(
                       course.description?.isNotEmpty == true
                           ? course.description!
-                          : 'Mo ta khoa hoc se duoc cap nhat tu backend.',
+                          : 'Mô tả khóa học sẽ được cập nhật từ hệ thống.',
                       style: const TextStyle(height: 1.45),
                     ),
                     const SizedBox(height: 14),
@@ -130,9 +130,9 @@ class _CourseDetailContent extends ConsumerWidget {
                     const SizedBox(height: 18),
                     Text(
                       isEnrolled
-                          ? 'Da so huu'
+                          ? 'Đã sở hữu'
                           : course.isFree
-                          ? 'Mien phi'
+                          ? 'Miễn phí'
                           : formatter.format(course.price),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
@@ -142,8 +142,8 @@ class _CourseDetailContent extends ConsumerWidget {
                         Expanded(
                           child: AppButton(
                             label: isEnrolled
-                                ? 'Vao hoc'
-                                : (course.isFree ? 'Dang ky ngay' : 'Them vao gio hang'),
+                                ? 'Vào học'
+                                : (course.isFree ? 'Đăng ký ngay' : 'Thêm vào giỏ hàng'),
                             icon: isEnrolled
                                 ? Icons.play_circle_outline
                                 : (course.isFree
@@ -165,8 +165,8 @@ class _CourseDetailContent extends ConsumerWidget {
                         const SizedBox(width: 10),
                         IconButton.outlined(
                           tooltip: isWishlisted
-                              ? 'Xoa khoi wishlist'
-                              : 'Them vao wishlist',
+                              ? 'Xóa khỏi danh sách yêu thích'
+                              : 'Thêm vào danh sách yêu thích',
                           onPressed: wishlistLoading
                               ? null
                               : () => _toggleWishlist(
@@ -211,7 +211,7 @@ class _CourseDetailContent extends ConsumerWidget {
                     ],
                     const SizedBox(height: 26),
                     Text(
-                      'Noi dung khoa hoc',
+                      'Nội dung khóa học',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 10),
@@ -226,7 +226,7 @@ class _CourseDetailContent extends ConsumerWidget {
             child: Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 28),
               child: Text(
-                'Backend chua tra ve section/lesson cho khoa hoc nay.',
+                'Hệ thống chưa có bài học cho khóa học này.',
               ),
             ),
           )
@@ -257,7 +257,7 @@ class _CourseDetailContent extends ConsumerWidget {
     final state = ref.read(cartControllerProvider);
     if (!context.mounted) return;
     state.whenOrNull(
-      data: (_) => _showMessage(context, 'Da them khoa hoc vao gio hang.'),
+      data: (_) => _showMessage(context, 'Đã thêm khóa học vào giỏ hàng.'),
       error: (error, _) => _showMessage(context, error.toString()),
     );
   }
@@ -291,7 +291,7 @@ class _CourseDetailContent extends ConsumerWidget {
     final state = ref.read(enrollmentActionProvider);
     if (!context.mounted) return;
     state.whenOrNull(
-      data: (_) => _showMessage(context, 'Da dang ky khoa hoc.'),
+      data: (_) => _showMessage(context, 'Đã đăng ký khóa học.'),
       error: (error, _) => _showMessage(context, error.toString()),
     );
   }
@@ -312,8 +312,8 @@ class _CourseDetailContent extends ConsumerWidget {
       data: (_) => _showMessage(
         context,
         isWishlisted
-            ? 'Da xoa khoa hoc khoi wishlist.'
-            : 'Da them khoa hoc vao wishlist.',
+            ? 'Đã xóa khóa học khỏi danh sách yêu thích.'
+            : 'Đã thêm khóa học vào danh sách yêu thích.',
       ),
       error: (error, _) => _showMessage(context, error.toString()),
     );
@@ -351,7 +351,7 @@ class _SectionTile extends StatelessWidget {
               '${index + 1}. ${section.title}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            subtitle: Text('${section.lessons.length} bai hoc'),
+            subtitle: Text('${section.lessons.length} bài học'),
             children: section.lessons
                 .map(
                   (lesson) {
@@ -367,13 +367,13 @@ class _SectionTile extends StatelessWidget {
                                     : Icons.article_outlined)),
                       ),
                       title: Text(lesson.title),
-                      subtitle: Text(lesson.lessonType == 'Lesson' || lesson.lessonType == null ? 'Bai hoc' : (lesson.lessonType == 'Video' ? 'Video' : lesson.lessonType!)),
-                      trailing: lesson.isPreview ? const Text('Xem thu') : null,
+                      subtitle: Text(lesson.lessonType == 'Lesson' || lesson.lessonType == null ? 'Bài học' : (lesson.lessonType == 'Video' ? 'Video' : lesson.lessonType!)),
+                      trailing: lesson.isPreview ? const Text('Xem thử') : null,
                       onTap: () {
                         if (!hasAccess) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Ban can mua khoa hoc de hoc bai nay.'),
+                              content: Text('Bạn cần mua khóa học để học bài này.'),
                             ),
                           );
                         } else {
@@ -420,11 +420,11 @@ class _Pill extends StatelessWidget {
 String _formatLevel(String level) {
   switch (level.toUpperCase()) {
     case 'BEGINNER':
-      return 'Co ban';
+      return 'Cơ bản';
     case 'INTERMEDIATE':
-      return 'Trung cap';
+      return 'Trung cấp';
     case 'ADVANCED':
-      return 'Nang cao';
+      return 'Nâng cao';
     default:
       return level;
   }
@@ -456,7 +456,7 @@ class _ReviewsSection extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Danh gia tu hoc vien',
+                'Đánh giá từ học viên',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -466,7 +466,7 @@ class _ReviewsSection extends ConsumerWidget {
           const SizedBox(height: 16),
           reviewsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, _) => Text('Loi tai danh gia: $error'),
+            error: (error, _) => Text('Lỗi tải đánh giá: $error'),
             data: (page) {
               final reviews = page.content;
               final existingReview = currentUserEmail == null
@@ -491,7 +491,7 @@ class _ReviewsSection extends ConsumerWidget {
                               ? null
                               : () => _showReviewDialog(context, ref, courseId: courseId),
                           icon: const Icon(Icons.rate_review_outlined),
-                          label: const Text('Viet danh gia cho khoa hoc nay'),
+                          label: const Text('Viết đánh giá cho khóa học này'),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -507,7 +507,7 @@ class _ReviewsSection extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Danh gia cua ban:',
+                              'Đánh giá của bạn:',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.primaryDark,
@@ -528,7 +528,7 @@ class _ReviewsSection extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(
                         child: Text(
-                          'Chua co danh gia nao cho khoa hoc nay. Hay la nguoi dau tien danh gia!',
+                          'Chưa có đánh giá nào cho khóa học này. Hãy là người đầu tiên đánh giá!',
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
                         ),
@@ -581,7 +581,7 @@ class _ReviewsSection extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${reviews.length} xep hang',
+              '${reviews.length} xếp hạng',
               style: const TextStyle(color: Colors.grey),
             ),
           ],
@@ -674,12 +674,12 @@ class _ReviewsSection extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xoa danh gia'),
-        content: const Text('Ban co chac chan muon xoa danh gia nay khong?'),
+        title: const Text('Xóa đánh giá'),
+        content: const Text('Bạn có chắc chắn muốn xóa đánh giá này không?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Huy'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
@@ -687,7 +687,7 @@ class _ReviewsSection extends ConsumerWidget {
               Navigator.pop(context);
               await ref.read(reviewActionProvider.notifier).deleteReview(courseId, review.id);
             },
-            child: const Text('Xoa'),
+            child: const Text('Xóa'),
           ),
         ],
       ),
@@ -768,7 +768,7 @@ class _ReviewSubmitBottomSheetState extends ConsumerState<_ReviewSubmitBottomShe
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isEdit ? 'Chinh sua danh gia' : 'Danh gia khoa hoc',
+                isEdit ? 'Chỉnh sửa đánh giá' : 'Đánh giá khóa học',
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               IconButton(
@@ -807,7 +807,7 @@ class _ReviewSubmitBottomSheetState extends ConsumerState<_ReviewSubmitBottomShe
             controller: _commentController,
             maxLines: 4,
             decoration: const InputDecoration(
-              hintText: 'Hay chia se cam nghi cua ban ve khoa hoc nay...',
+              hintText: 'Hãy chia sẻ cảm nghĩ của bạn về khóa học này...',
               border: OutlineInputBorder(),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: AppColors.primary, width: 2),
@@ -817,7 +817,7 @@ class _ReviewSubmitBottomSheetState extends ConsumerState<_ReviewSubmitBottomShe
           const SizedBox(height: 20),
           // Submit Button
           AppButton(
-            label: isEdit ? 'Cap nhat' : 'Gui danh gia',
+            label: isEdit ? 'Cập nhật' : 'Gửi đánh giá',
             isLoading: isLoading,
             onPressed: () async {
               if (isEdit) {
@@ -846,7 +846,7 @@ class _ReviewSubmitBottomSheetState extends ConsumerState<_ReviewSubmitBottomShe
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(isEdit ? 'Cap nhat thanh cong!' : 'Gui danh gia thanh cong! Cam on ban.'),
+                      content: Text(isEdit ? 'Cập nhật thành công!' : 'Gửi đánh giá thành công! Cảm ơn bạn.'),
                     ),
                   );
                 }

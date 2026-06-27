@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/router/auth_route_helper.dart';
 import '../../../core/router/route_names.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_text_field.dart';
 import 'auth_controller.dart';
@@ -49,18 +50,39 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dang ky')),
+      appBar: AppBar(title: const Text('Đăng ký')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.person_add_alt_1_outlined,
+                  size: 56,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
             Text(
-              'Tao tai khoan Brainery',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'Tạo tài khoản Brainery',
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.ink,
+                  ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Bat dau hoc cac khoa hoc phu hop voi muc tieu cua ban.',
+            Text(
+              'Bắt đầu học các khóa học phù hợp với mục tiêu của bạn.',
+              style: TextStyle(color: AppColors.muted),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             Form(
@@ -69,10 +91,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 children: [
                   AppTextField(
                     controller: _name,
-                    label: 'Ho va ten',
+                    label: 'Họ và tên',
                     prefixIcon: Icons.person_outline,
                     validator: (value) => value == null || value.trim().isEmpty
-                        ? 'Nhap ho ten'
+                        ? 'Nhập họ tên'
                         : null,
                   ),
                   const SizedBox(height: 14),
@@ -86,30 +108,30 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   const SizedBox(height: 14),
                   AppTextField(
                     controller: _password,
-                    label: 'Mat khau',
+                    label: 'Mật khẩu',
                     prefixIcon: Icons.lock_outline,
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Nhap mat khau';
+                        return 'Nhập mật khẩu';
                       }
-                      if (value.length < 6) return 'Mat khau toi thieu 6 ky tu';
+                      if (value.length < 6) return 'Mật khẩu tối thiểu 6 ký tự';
                       return null;
                     },
                   ),
                   const SizedBox(height: 14),
                   AppTextField(
                     controller: _confirmPassword,
-                    label: 'Xac nhan mat khau',
+                    label: 'Xác nhận mật khẩu',
                     prefixIcon: Icons.verified_user_outlined,
                     obscureText: true,
                     validator: (value) => value != _password.text
-                        ? 'Mat khau xac nhan khong khop'
+                        ? 'Mật khẩu xác nhận không khớp'
                         : null,
                   ),
                   const SizedBox(height: 22),
                   AppButton(
-                    label: 'Tao tai khoan',
+                    label: 'Tạo tài khoản',
                     icon: Icons.person_add_alt,
                     isLoading: auth.isLoading,
                     onPressed: _submit,
@@ -120,7 +142,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             const SizedBox(height: 18),
             TextButton(
               onPressed: () => context.go(RouteNames.login),
-              child: const Text('Da co tai khoan? Dang nhap'),
+              child: const Text('Đã có tài khoản? Đăng nhập'),
             ),
           ],
         ),
@@ -129,9 +151,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   String? _validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) return 'Nhap email';
+    if (value == null || value.trim().isEmpty) return 'Nhập email';
     final ok = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim());
-    return ok ? null : 'Email chua dung dinh dang';
+    return ok ? null : 'Email chưa đúng định dạng';
   }
 
   Future<void> _submit() async {

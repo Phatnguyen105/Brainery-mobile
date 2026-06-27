@@ -24,11 +24,13 @@ class AppTheme {
         elevation: 0,
         centerTitle: false,
       ),
-      cardTheme: const CardThemeData(
-        elevation: 0,
+      cardTheme: CardThemeData(
+        elevation: 4,
+        shadowColor: Colors.black.withValues(alpha: 0.04),
         color: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -39,15 +41,15 @@ class AppTheme {
           vertical: 14,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.line),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.line),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
         ),
       ),
@@ -56,27 +58,29 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(48),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ),
       textTheme: const TextTheme(
         headlineMedium: TextStyle(
-          fontSize: 28,
+          fontSize: 26,
           fontWeight: FontWeight.w800,
           color: AppColors.ink,
+          letterSpacing: -0.5,
         ),
         titleLarge: TextStyle(
-          fontSize: 20,
+          fontSize: 19,
           fontWeight: FontWeight.w800,
           color: AppColors.ink,
+          letterSpacing: -0.2,
         ),
         titleMedium: TextStyle(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w700,
           color: AppColors.ink,
         ),
-        bodyMedium: TextStyle(fontSize: 14, color: AppColors.ink),
+        bodyMedium: TextStyle(fontSize: 14, color: AppColors.ink, height: 1.3),
       ),
     );
   }

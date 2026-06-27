@@ -20,14 +20,14 @@ class CartScreen extends ConsumerWidget {
     final formatter = NumberFormat.currency(locale: 'vi_VN', symbol: 'd');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Gio hang')),
+      appBar: AppBar(title: const Text('Giỏ hàng')),
       body: SafeArea(
         child: cart.when(
           data: (state) {
             if (state.items.isEmpty) {
               return const EmptyView(
-                title: 'Gio hang dang trong',
-                message: 'Them khoa hoc vao gio hang de thanh toan.',
+                title: 'Giỏ hàng đang trống',
+                message: 'Thêm khóa học vào giỏ hàng để thanh toán.',
                 icon: Icons.shopping_cart_outlined,
               );
             }
@@ -56,7 +56,7 @@ class CartScreen extends ConsumerWidget {
                               ),
                             ),
                             IconButton.outlined(
-                              tooltip: 'Xoa',
+                              tooltip: 'Xóa',
                               onPressed: () => ref
                                   .read(cartControllerProvider.notifier)
                                   .removeItem(course.id),
@@ -74,7 +74,7 @@ class CartScreen extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          const Expanded(child: Text('Tong tien')),
+                          const Expanded(child: Text('Tổng tiền')),
                           Text(
                             formatter.format(state.totalAmount),
                             style: Theme.of(context).textTheme.titleLarge,
@@ -98,7 +98,7 @@ class CartScreen extends ConsumerWidget {
                             return;
                           }
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Da tao don hang.')),
+                            const SnackBar(content: Text('Đã tạo đơn hàng.')),
                           );
                           if (order != null) {
                             context.push(
@@ -110,7 +110,7 @@ class CartScreen extends ConsumerWidget {
                           }
                         },
                         icon: const Icon(Icons.payment_outlined),
-                        label: const Text('Thanh toan'),
+                        label: const Text('Thanh toán'),
                       ),
                     ],
                   ),

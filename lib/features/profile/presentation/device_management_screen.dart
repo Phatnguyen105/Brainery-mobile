@@ -18,10 +18,10 @@ class DeviceManagementScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thiet bi'),
+        title: const Text('Thiết bị'),
         actions: [
           IconButton(
-            tooltip: 'Tai lai',
+            tooltip: 'Tải lại',
             onPressed: () =>
                 ref.read(deviceControllerProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
@@ -39,15 +39,15 @@ class DeviceManagementScreen extends ConsumerWidget {
                   child: ElevatedButton.icon(
                     onPressed: () => _register(context, ref),
                     icon: const Icon(Icons.add_to_home_screen_outlined),
-                    label: const Text('Ghi nhan thiet bi nay'),
+                    label: const Text('Ghi nhận thiết bị này'),
                   ),
                 ),
               ),
               Expanded(
                 child: items.isEmpty
                     ? const EmptyView(
-                        title: 'Chua co thiet bi',
-                        message: 'Bam ghi nhan de them emulator hien tai.',
+                        title: 'Chưa có thiết bị',
+                        message: 'Bấm ghi nhận để thêm thiết bị hiện tại.',
                         icon: Icons.devices_outlined,
                       )
                     : RefreshIndicator(
@@ -86,7 +86,7 @@ class DeviceManagementScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          state.hasError ? state.error.toString() : 'Da ghi nhan thiet bi.',
+          state.hasError ? state.error.toString() : 'Đã ghi nhận thiết bị.',
         ),
       ),
     );
@@ -100,16 +100,16 @@ class DeviceManagementScreen extends ConsumerWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xoa thiet bi?'),
+        title: const Text('Xóa thiết bị?'),
         content: Text(device.deviceName ?? device.deviceId),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Huy'),
+            child: const Text('Hủy'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Xoa'),
+            child: const Text('Xóa'),
           ),
         ],
       ),
@@ -121,7 +121,7 @@ class DeviceManagementScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          state.hasError ? state.error.toString() : 'Da xoa thiet bi.',
+          state.hasError ? state.error.toString() : 'Đã xóa thiết bị.',
         ),
       ),
     );
@@ -137,7 +137,7 @@ class _DeviceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lastSeen = device.lastSeenAt == null
-        ? 'Chua co lan truy cap'
+        ? 'Chưa có lần truy cập'
         : DateFormat('dd/MM/yyyy HH:mm').format(device.lastSeenAt!);
 
     return Card(
@@ -181,7 +181,7 @@ class _DeviceCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              tooltip: 'Xoa',
+              tooltip: 'Xóa',
               onPressed: onDelete,
               icon: const Icon(Icons.delete_outline),
             ),

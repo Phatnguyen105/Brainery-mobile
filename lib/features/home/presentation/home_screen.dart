@@ -43,49 +43,88 @@ class HomeScreen extends ConsumerWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Hi, ${user?.fullName.split(' ').first ?? 'ban'}',
-                        style: Theme.of(context).textTheme.headlineMedium,
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(22),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [AppColors.primary, AppColors.primaryDark],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.25),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hi, ${user?.fullName.split(' ').first ?? 'bạn'} 👋',
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                            const SizedBox(height: 6),
+                            const Text(
+                              'Tìm khóa học tốt nhất để học hôm nay.',
+                              style: TextStyle(color: Colors.white70, fontSize: 15),
+                            ),
+                            const SizedBox(height: 18),
+                            InkWell(
+                              onTap: () => context.push(RouteNames.courses),
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 13,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.search, color: AppColors.primary),
+                                    SizedBox(width: 10),
+                                    Text(
+                                      'Tìm kiếm khóa học, kỹ năng, giảng viên',
+                                      style: TextStyle(color: AppColors.muted, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 6),
-                      const Text('Tim khoa hoc tot nhat de hoc hom nay.'),
                       if (user?.isAdmin ?? false) ...[
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 16),
                         _AdminShortcut(
                           onTap: () => context.go(RouteNames.admin),
                         ),
                       ],
-                      const SizedBox(height: 16),
-                      InkWell(
-                        onTap: () => context.push(RouteNames.courses),
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 13,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.line),
-                          ),
-                          child: const Row(
-                            children: [
-                              Icon(Icons.search),
-                              SizedBox(width: 10),
-                              Text('Tim kiem khoa hoc, ky nang, giang vien'),
-                            ],
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 22),
                       _SectionTitle(
-                        title: 'Danh muc',
-                        action: 'Xem tat ca',
+                        title: 'Danh mục',
+                        action: 'Xem tất cả',
                         onTap: () => context.push(RouteNames.courses),
                       ),
                       const SizedBox(height: 10),
@@ -93,7 +132,7 @@ class HomeScreen extends ConsumerWidget {
                         data: (items) => items.isEmpty
                             ? const _InlineEmpty(
                                 icon: Icons.category_outlined,
-                                text: 'Backend chua co danh muc.',
+                                text: 'Hệ thống chưa có danh mục.',
                               )
                             : SizedBox(
                                 height: 46,
@@ -108,13 +147,16 @@ class HomeScreen extends ConsumerWidget {
                                       const SizedBox(width: 8),
                                   itemBuilder: (context, index) => ActionChip(
                                     label: Text(items[index].name),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
                                     onPressed: () => context.push(
                                       '${RouteNames.courses}?categoryId=${items[index].id}',
                                     ),
                                   ),
                                 ),
                               ),
-                        error: (_, _) => const Text('Chua tai duoc danh muc.'),
+                        error: (_, _) => const Text('Chưa tải được danh mục.'),
                         loading: () => const SizedBox(
                           height: 42,
                           child: LinearProgressIndicator(),
@@ -122,8 +164,8 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 22),
                       _SectionTitle(
-                        title: 'Noi bat',
-                        action: 'Xem them',
+                        title: 'Nổi bật',
+                        action: 'Xem thêm',
                         onTap: () => context.push(RouteNames.courses),
                       ),
                     ],
@@ -140,8 +182,8 @@ class HomeScreen extends ConsumerWidget {
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 22, 20, 10),
                   child: _SectionTitle(
-                    title: 'Mua nhieu nhat',
-                    action: 'Xem them',
+                    title: 'Mua nhiều nhất',
+                    action: 'Xem thêm',
                     onTap: () => context.push('${RouteNames.courses}?sort=best_seller'),
                   ),
                 ),
@@ -149,15 +191,15 @@ class HomeScreen extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: _HorizontalCourseList(
                   coursesAsync: bestSellers,
-                  emptyText: 'Chua co khoa hoc ban chay.',
+                  emptyText: 'Chưa có khóa học bán chạy.',
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 22, 20, 10),
                   child: _SectionTitle(
-                    title: 'Danh gia cao nhat',
-                    action: 'Xem them',
+                    title: 'Đánh giá cao nhất',
+                    action: 'Xem thêm',
                     onTap: () => context.push('${RouteNames.courses}?sort=rating'),
                   ),
                 ),
@@ -165,15 +207,15 @@ class HomeScreen extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: _HorizontalCourseList(
                   coursesAsync: topRated,
-                  emptyText: 'Chua co khoa hoc danh gia cao.',
+                  emptyText: 'Chưa có khóa học đánh giá cao.',
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 22, 20, 10),
                   child: _SectionTitle(
-                    title: 'Khoa hoc moi',
-                    action: 'Xem them',
+                    title: 'Khóa học mới',
+                    action: 'Xem thêm',
                     onTap: () => context.push('${RouteNames.courses}?sort=newest'),
                   ),
                 ),
@@ -181,15 +223,15 @@ class HomeScreen extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: _HorizontalCourseList(
                   coursesAsync: newCourses,
-                  emptyText: 'Chua co khoa hoc moi.',
+                  emptyText: 'Chưa có khóa học mới.',
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 22, 20, 8),
                   child: _SectionTitle(
-                    title: 'Pho bien nhat',
-                    action: 'Tat ca',
+                    title: 'Phổ biến nhất',
+                    action: 'Tất cả',
                     onTap: () => context.push('${RouteNames.courses}?sort=popular'),
                   ),
                 ),
@@ -201,7 +243,7 @@ class HomeScreen extends ConsumerWidget {
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: _InlineEmpty(
                             icon: Icons.menu_book_outlined,
-                            text: 'Chua co khoa hoc pho bien.',
+                            text: 'Chưa có khóa học phổ biến.',
                           ),
                         ),
                       )
@@ -244,21 +286,32 @@ class _AdminShortcut extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(8),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF4F46E5), Color(0xFF4338CA)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF4F46E5).withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           child: Row(
             children: [
               Icon(Icons.admin_panel_settings, color: Colors.white),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Vao khu vuc quan tri',
+                  'Vào khu vực quản trị',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -285,7 +338,7 @@ class _InlineEmpty extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.line),
       ),
       child: Padding(
