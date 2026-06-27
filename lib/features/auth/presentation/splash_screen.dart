@@ -32,7 +32,7 @@ class SplashScreen extends ConsumerWidget {
               style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
             ),
             SizedBox(height: 28),
-            LoadingView(message: 'Dang kiem tra phien dang nhap...'),
+            LoadingView(message: 'Đang kiểm tra phiên đăng nhập...'),
           ],
         ),
       ),

@@ -17,14 +17,14 @@ class WishlistScreen extends ConsumerWidget {
     final wishlist = ref.watch(wishlistControllerProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Yeu thich')),
+      appBar: AppBar(title: const Text('Yêu thích')),
       body: SafeArea(
         child: wishlist.when(
           data: (items) {
             if (items.isEmpty) {
               return const EmptyView(
-                title: 'Danh sach yeu thich trong',
-                message: 'Bam trai tim trong chi tiet khoa hoc de luu lai.',
+                title: 'Danh sách yêu thích trống',
+                message: 'Bấm trái tim trong chi tiết khóa học để lưu lại.',
                 icon: Icons.favorite_outline,
               );
             }
@@ -48,7 +48,7 @@ class WishlistScreen extends ConsumerWidget {
                         ),
                       ),
                       IconButton.outlined(
-                        tooltip: 'Xoa khoi danh sach yeu thich',
+                        tooltip: 'Xóa khỏi danh sách yêu thích',
                         onPressed: () => ref
                             .read(wishlistControllerProvider.notifier)
                             .remove(course.id),

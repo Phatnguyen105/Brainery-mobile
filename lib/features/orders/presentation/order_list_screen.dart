@@ -18,10 +18,10 @@ class OrderListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Don hang'),
+        title: const Text('Đơn hàng'),
         actions: [
           IconButton(
-            tooltip: 'Tai lai',
+            tooltip: 'Tải lại',
             onPressed: () =>
                 ref.read(orderControllerProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
@@ -33,8 +33,8 @@ class OrderListScreen extends ConsumerWidget {
           data: (items) {
             if (items.isEmpty) {
               return const EmptyView(
-                title: 'Chua co don hang',
-                message: 'Thanh toan gio hang de tao don hang moi.',
+                title: 'Chưa có đơn hàng',
+                message: 'Thanh toán giỏ hàng để tạo đơn hàng mới.',
                 icon: Icons.receipt_long_outlined,
               );
             }
@@ -103,7 +103,7 @@ class _OrderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Don ${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
+                        'Đơn ${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       if (date != null) Text(date),
@@ -115,17 +115,17 @@ class _OrderCard extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             _MoneyRow(
-              label: 'Tong tien',
+              label: 'Tổng tiền',
               value: currency.format(order.totalAmount),
             ),
             if (order.discountAmount > 0)
               _MoneyRow(
-                label: 'Giam gia',
+                label: 'Giảm giá',
                 value: '-${currency.format(order.discountAmount)}',
               ),
             const Divider(height: 20),
             _MoneyRow(
-              label: 'Thanh toan',
+              label: 'Thanh toán',
               value: currency.format(order.finalPrice),
               strong: true,
             ),

@@ -23,10 +23,10 @@ class AdminDashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Dashboard'),
+        title: const Text('Bảng quản trị Admin'),
         actions: [
           IconButton(
-            tooltip: 'Student app',
+            tooltip: 'Ứng dụng học viên',
             onPressed: () => context.go(RouteNames.home),
             icon: const Icon(Icons.school_outlined),
           ),
@@ -67,58 +67,58 @@ class AdminDashboardScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 18),
             Text(
-              'Quan tri noi dung',
+              'Quản trị nội dung',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 10),
             _AdminTile(
               icon: Icons.menu_book_outlined,
-              title: 'Quan ly khoa hoc',
-              subtitle: 'Tao, sua, publish, archive khoa hoc',
+              title: 'Quản lý khóa học',
+              subtitle: 'Tạo, sửa, xuất bản, lưu trữ khóa học',
               onTap: () => context.push(RouteNames.adminCourses),
             ),
             _AdminTile(
               icon: Icons.category_outlined,
-              title: 'Category va tag',
-              subtitle: 'Quan ly danh muc va tag khoa hoc',
+              title: 'Danh mục và thẻ',
+              subtitle: 'Quản lý danh mục và thẻ khóa học',
               onTap: () => context.push(RouteNames.adminLookups),
             ),
             _AdminTile(
               icon: Icons.play_lesson_outlined,
-              title: 'Section va lesson',
-              subtitle: 'Sap xep noi dung va bai hoc',
+              title: 'Chương mục và bài học',
+              subtitle: 'Sắp xếp nội dung và bài học',
               onTap: () => context.push(RouteNames.adminContent),
             ),
             const SizedBox(height: 18),
-            Text('Van hanh', style: Theme.of(context).textTheme.titleLarge),
+            Text('Vận hành', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 10),
             _AdminTile(
               icon: Icons.people_outline,
-              title: 'Nguoi dung',
-              subtitle: 'Xem user, khoa/mo tai khoan, gan role',
+              title: 'Người dùng',
+              subtitle: 'Xem tài khoản, khóa/mở tài khoản, gán quyền',
               onTap: () => context.push(RouteNames.adminUsers),
             ),
             _AdminTile(
               icon: Icons.receipt_long_outlined,
-              title: 'Don hang va thanh toan',
-              subtitle: 'Kiem tra order, transaction, mark paid',
+              title: 'Đơn hàng và thanh toán',
+              subtitle: 'Kiểm tra đơn hàng, giao dịch, xác nhận thanh toán',
               onTap: () => context.push(RouteNames.adminOrders),
             ),
             _AdminTile(
               icon: Icons.notifications_outlined,
-              title: 'Thong bao',
-              subtitle: 'Gui notification den hoc vien',
+              title: 'Thông báo',
+              subtitle: 'Gửi thông báo đến học viên',
               onTap: () => _comingSoon(context),
             ),
             _AdminTile(
               icon: Icons.history_outlined,
-              title: 'Audit logs',
-              subtitle: 'Theo doi thao tac quan tri',
+              title: 'Nhật ký hệ thống',
+              subtitle: 'Theo dõi thao tác quản trị',
               onTap: () => _comingSoon(context),
             ),
             const SizedBox(height: 24),
             AppButton(
-              label: 'Dang xuat',
+              label: 'Đăng xuất',
               icon: Icons.logout,
               isLoading: auth.isLoading,
               onPressed: () =>
@@ -134,7 +134,7 @@ class AdminDashboardScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Man quan tri chi tiet se duoc ket noi API admin tiep theo.',
+          'Màn hình quản trị chi tiết sẽ được kết nối API admin tiếp theo.',
         ),
       ),
     );

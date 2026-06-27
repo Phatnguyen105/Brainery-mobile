@@ -16,10 +16,10 @@ class InstructorDashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Instructor'),
+        title: const Text('Giảng viên'),
         actions: [
           IconButton(
-            tooltip: 'Lam moi',
+            tooltip: 'Làm mới',
             onPressed: () =>
                 ref.read(instructorCourseControllerProvider.notifier).refresh(),
             icon: const Icon(Icons.refresh),
@@ -29,7 +29,7 @@ class InstructorDashboardScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openCreateCourse(context),
         icon: const Icon(Icons.add),
-        label: const Text('Tao khoa hoc'),
+        label: const Text('Tạo khóa học'),
       ),
       body: SafeArea(
         child: coursesAsync.when(
@@ -86,7 +86,7 @@ class _InstructorCourseCard extends ConsumerWidget {
         leading: const Icon(Icons.menu_book_outlined, color: AppColors.primary),
         title: Text(course.title),
         subtitle: Text(
-          '${course.level} - ${course.isFree ? 'Mien phi' : '${course.price.toStringAsFixed(0)} d'}',
+          '${course.level} - ${course.isFree ? 'Miễn phí' : '${course.price.toStringAsFixed(0)} d'}',
         ),
         childrenPadding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         children: [
@@ -95,13 +95,13 @@ class _InstructorCourseCard extends ConsumerWidget {
               OutlinedButton.icon(
                 onPressed: () => _openSectionSheet(context, course.id),
                 icon: const Icon(Icons.view_agenda_outlined),
-                label: const Text('Section'),
+                label: const Text('Chương mục'),
               ),
               const SizedBox(width: 8),
               OutlinedButton.icon(
                 onPressed: () => _openQuizSheet(context, course.id),
                 icon: const Icon(Icons.quiz_outlined),
-                label: const Text('Quiz'),
+                label: const Text('Trắc nghiệm'),
               ),
             ],
           ),
@@ -113,7 +113,7 @@ class _InstructorCourseCard extends ConsumerWidget {
               if (detail.sections.isEmpty) {
                 return const Padding(
                   padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Text('Chua co section. Hay tao section truoc.'),
+                  child: Text('Chưa có chương mục. Hãy tạo chương mục trước.'),
                 );
               }
               return Column(
@@ -162,9 +162,9 @@ class _SectionTile extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       leading: const Icon(Icons.view_agenda_outlined),
       title: Text(section.title),
-      subtitle: Text('${section.lessons.length} lesson'),
+      subtitle: Text('${section.lessons.length} bài học'),
       trailing: IconButton(
-        tooltip: 'Them lesson',
+        tooltip: 'Thêm bài học',
         onPressed: () => showModalBottomSheet<void>(
           context: context,
           isScrollControlled: true,
@@ -227,12 +227,12 @@ class _CreateCourseSheetState extends ConsumerState<_CreateCourseSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _SheetHeader(title: 'Tao khoa hoc'),
+              const _SheetHeader(title: 'Tạo khóa học'),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _title,
                 decoration: const InputDecoration(
-                  labelText: 'Ten khoa hoc',
+                  labelText: 'Tên khóa học',
                   prefixIcon: Icon(Icons.menu_book_outlined),
                 ),
                 validator: _required,
@@ -252,14 +252,14 @@ class _CreateCourseSheetState extends ConsumerState<_CreateCourseSheet> {
                 error: (error, _) => Text(error.toString()),
                 data: (categories) {
                   if (categories.isEmpty) {
-                    return const Text('Chua co category.');
+                    return const Text('Chưa có danh mục.');
                   }
                   _categoryId ??= categories.first.id;
                   return DropdownButtonFormField<String>(
                     initialValue: _categoryId,
                     isExpanded: true,
                     decoration: const InputDecoration(
-                      labelText: 'Category',
+                      labelText: 'Danh mục',
                       prefixIcon: Icon(Icons.category_outlined),
                     ),
                     items: categories
@@ -272,14 +272,14 @@ class _CreateCourseSheetState extends ConsumerState<_CreateCourseSheet> {
                         .toList(),
                     onChanged: (value) => setState(() => _categoryId = value),
                     validator: (value) =>
-                        value == null ? 'Chon category' : null,
+                        value == null ? 'Chọn danh mục' : null,
                   );
                 },
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: _level,
-                decoration: const InputDecoration(labelText: 'Level'),
+                decoration: const InputDecoration(labelText: 'Cấp độ'),
                 items: const ['Beginner', 'Intermediate', 'Advanced']
                     .map(
                       (level) =>
@@ -293,12 +293,12 @@ class _CreateCourseSheetState extends ConsumerState<_CreateCourseSheet> {
                 controller: _price,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Gia',
+                  labelText: 'Giá',
                   prefixIcon: Icon(Icons.payments_outlined),
                 ),
                 validator: (value) {
                   final price = double.tryParse(value ?? '');
-                  return price == null || price < 0 ? 'Gia khong hop le' : null;
+                  return price == null || price < 0 ? 'Giá không hợp lệ' : null;
                 },
               ),
               const SizedBox(height: 10),
@@ -315,13 +315,13 @@ class _CreateCourseSheetState extends ConsumerState<_CreateCourseSheet> {
                 minLines: 3,
                 maxLines: 4,
                 decoration: const InputDecoration(
-                  labelText: 'Mo ta',
+                  labelText: 'Mô tả',
                   alignLabelWithHint: true,
                 ),
               ),
               const SizedBox(height: 16),
               AppButton(
-                label: 'Luu khoa hoc',
+                label: 'Lưu khóa học',
                 icon: Icons.save_outlined,
                 isLoading: saving,
                 onPressed: _categoryId == null ? null : _submit,
@@ -350,7 +350,7 @@ class _CreateCourseSheetState extends ConsumerState<_CreateCourseSheet> {
     final state = ref.read(instructorCourseControllerProvider);
     _showMessage(
       context,
-      state.hasError ? state.error.toString() : 'Da tao khoa hoc.',
+      state.hasError ? state.error.toString() : 'Đã tạo khóa học.',
     );
     if (!state.hasError) Navigator.of(context).pop();
   }
@@ -387,23 +387,23 @@ class _CreateSectionSheetState extends ConsumerState<_CreateSectionSheet> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const _SheetHeader(title: 'Them section'),
+            const _SheetHeader(title: 'Thêm chương mục'),
             const SizedBox(height: 12),
             TextFormField(
               controller: _title,
-              decoration: const InputDecoration(labelText: 'Ten section'),
+              decoration: const InputDecoration(labelText: 'Tên chương mục'),
               validator: _required,
             ),
             const SizedBox(height: 10),
             TextFormField(
               controller: _sort,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Thu tu'),
+              decoration: const InputDecoration(labelText: 'Thứ tự'),
               validator: _sortValidator,
             ),
             const SizedBox(height: 16),
             AppButton(
-              label: 'Luu section',
+              label: 'Lưu chương mục',
               icon: Icons.save_outlined,
               isLoading: _saving,
               onPressed: _submit,
@@ -426,7 +426,7 @@ class _CreateSectionSheetState extends ConsumerState<_CreateSectionSheet> {
             sortOrder: int.parse(_sort.text.trim()),
           );
       if (!mounted) return;
-      _showMessage(context, 'Da tao section.');
+      _showMessage(context, 'Đã tạo chương mục.');
       Navigator.of(context).pop();
     } catch (error) {
       if (mounted) _showMessage(context, error.toString());
@@ -473,11 +473,11 @@ class _CreateLessonSheetState extends ConsumerState<_CreateLessonSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const _SheetHeader(title: 'Them lesson'),
+              const _SheetHeader(title: 'Thêm bài học'),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _title,
-                decoration: const InputDecoration(labelText: 'Ten lesson'),
+                decoration: const InputDecoration(labelText: 'Tên bài học'),
                 validator: _required,
               ),
               const SizedBox(height: 10),
@@ -487,7 +487,7 @@ class _CreateLessonSheetState extends ConsumerState<_CreateLessonSheet> {
                     child: TextFormField(
                       controller: _sort,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(labelText: 'Thu tu'),
+                      decoration: const InputDecoration(labelText: 'Thứ tự'),
                       validator: _sortValidator,
                     ),
                   ),
@@ -495,7 +495,7 @@ class _CreateLessonSheetState extends ConsumerState<_CreateLessonSheet> {
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: _type,
-                      decoration: const InputDecoration(labelText: 'Loai'),
+                      decoration: const InputDecoration(labelText: 'Loại'),
                       items: const ['Video', 'Text', 'Quiz']
                           .map(
                             (type) => DropdownMenuItem(
@@ -520,11 +520,11 @@ class _CreateLessonSheetState extends ConsumerState<_CreateLessonSheet> {
                 controller: _content,
                 minLines: 3,
                 maxLines: 5,
-                decoration: const InputDecoration(labelText: 'Noi dung'),
+                decoration: const InputDecoration(labelText: 'Nội dung'),
               ),
               const SizedBox(height: 16),
               AppButton(
-                label: 'Luu lesson',
+                label: 'Lưu bài học',
                 icon: Icons.save_outlined,
                 isLoading: _saving,
                 onPressed: _submit,
@@ -552,7 +552,7 @@ class _CreateLessonSheetState extends ConsumerState<_CreateLessonSheet> {
             content: _emptyToNull(_content.text),
           );
       if (!mounted) return;
-      _showMessage(context, 'Da tao lesson.');
+      _showMessage(context, 'Đã tạo bài học.');
       Navigator.of(context).pop();
     } catch (error) {
       if (mounted) _showMessage(context, error.toString());
@@ -610,7 +610,7 @@ class _CreateQuizSheetState extends ConsumerState<_CreateQuizSheet> {
             for (final section in course.sections) ...section.lessons,
           ];
           if (lessons.isEmpty) {
-            return const Text('Can tao lesson truoc khi tao quiz.');
+            return const Text('Cần tạo bài học trước khi tạo trắc nghiệm.');
           }
           _lessonId ??= lessons.first.id;
           return Form(
@@ -619,7 +619,7 @@ class _CreateQuizSheetState extends ConsumerState<_CreateQuizSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const _SheetHeader(title: 'Tao quiz'),
+                  const _SheetHeader(title: 'Tạo trắc nghiệm'),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
                     initialValue: _lessonId,
@@ -638,31 +638,31 @@ class _CreateQuizSheetState extends ConsumerState<_CreateQuizSheet> {
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _title,
-                    decoration: const InputDecoration(labelText: 'Ten quiz'),
+                    decoration: const InputDecoration(labelText: 'Tên trắc nghiệm'),
                     validator: _required,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _description,
-                    decoration: const InputDecoration(labelText: 'Mo ta'),
+                    decoration: const InputDecoration(labelText: 'Mô tả'),
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _question,
-                    decoration: const InputDecoration(labelText: 'Cau hoi'),
+                    decoration: const InputDecoration(labelText: 'Câu hỏi'),
                     validator: _required,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _correct,
-                    decoration: const InputDecoration(labelText: 'Dap an dung'),
+                    decoration: const InputDecoration(labelText: 'Đáp án đúng'),
                     validator: _required,
                   ),
                   const SizedBox(height: 10),
                   TextFormField(
                     controller: _wrong1,
                     decoration: const InputDecoration(
-                      labelText: 'Dap an sai 1',
+                      labelText: 'Đáp án sai 1',
                     ),
                     validator: _required,
                   ),
@@ -670,7 +670,7 @@ class _CreateQuizSheetState extends ConsumerState<_CreateQuizSheet> {
                   TextFormField(
                     controller: _wrong2,
                     decoration: const InputDecoration(
-                      labelText: 'Dap an sai 2',
+                      labelText: 'Đáp án sai 2',
                     ),
                     validator: _required,
                   ),
@@ -678,13 +678,13 @@ class _CreateQuizSheetState extends ConsumerState<_CreateQuizSheet> {
                   TextFormField(
                     controller: _wrong3,
                     decoration: const InputDecoration(
-                      labelText: 'Dap an sai 3',
+                      labelText: 'Đáp án sai 3',
                     ),
                     validator: _required,
                   ),
                   const SizedBox(height: 16),
                   AppButton(
-                    label: 'Luu quiz',
+                    label: 'Lưu trắc nghiệm',
                     icon: Icons.save_outlined,
                     isLoading: _saving,
                     onPressed: _submit,
@@ -718,7 +718,7 @@ class _CreateQuizSheetState extends ConsumerState<_CreateQuizSheet> {
             ],
           );
       if (!mounted) return;
-      _showMessage(context, 'Da tao quiz.');
+      _showMessage(context, 'Đã tạo trắc nghiệm.');
       Navigator.of(context).pop();
     } catch (error) {
       if (mounted) _showMessage(context, error.toString());
@@ -760,7 +760,7 @@ class _SheetHeader extends StatelessWidget {
           child: Text(title, style: Theme.of(context).textTheme.titleLarge),
         ),
         IconButton(
-          tooltip: 'Dong',
+          tooltip: 'Đóng',
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.close),
         ),
@@ -788,12 +788,12 @@ class _EmptyState extends StatelessWidget {
               color: AppColors.primary,
             ),
             const SizedBox(height: 12),
-            const Text('Ban chua co khoa hoc nao.'),
+            const Text('Bạn chưa có khóa học nào.'),
             const SizedBox(height: 12),
             FilledButton.icon(
               onPressed: onCreate,
               icon: const Icon(Icons.add),
-              label: const Text('Tao khoa hoc'),
+              label: const Text('Tạo khóa học'),
             ),
           ],
         ),
@@ -823,7 +823,7 @@ class _ErrorState extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Thu lai'),
+              label: const Text('Thử lại'),
             ),
           ],
         ),
@@ -833,12 +833,12 @@ class _ErrorState extends StatelessWidget {
 }
 
 String? _required(String? value) {
-  return value == null || value.trim().isEmpty ? 'Bat buoc nhap' : null;
+  return value == null || value.trim().isEmpty ? 'Bắt buộc nhập' : null;
 }
 
 String? _sortValidator(String? value) {
   final sortOrder = int.tryParse(value ?? '');
-  return sortOrder == null || sortOrder < 0 ? 'Thu tu khong hop le' : null;
+  return sortOrder == null || sortOrder < 0 ? 'Thứ tự không hợp lệ' : null;
 }
 
 String? _emptyToNull(String value) {

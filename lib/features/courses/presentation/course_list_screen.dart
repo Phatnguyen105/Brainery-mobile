@@ -57,7 +57,7 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
         : const <CategoryModel>[];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Khoa hoc')),
+      appBar: AppBar(title: const Text('Khóa học')),
       body: SafeArea(
         child: Column(
           children: [
@@ -70,7 +70,7 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                     textInputAction: TextInputAction.search,
                     onSubmitted: (_) => _applyFilters(),
                     decoration: InputDecoration(
-                      hintText: 'Tim theo tu khoa',
+                      hintText: 'Tìm theo từ khóa',
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.tune),
@@ -88,7 +88,7 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                             value: _categoryId?.isEmpty == true
                                 ? null
                                 : _categoryId,
-                            hint: const Text('Danh muc'),
+                            hint: const Text('Danh mục'),
                             items: categories
                                 .map(
                                   (item) => DropdownMenuItem(
@@ -107,19 +107,19 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                         DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _level,
-                            hint: const Text('Trinh do'),
+                            hint: const Text('Trình độ'),
                             items: const [
                               DropdownMenuItem(
                                 value: 'BEGINNER',
-                                child: Text('Co ban'),
+                                child: Text('Cơ bản'),
                               ),
                               DropdownMenuItem(
                                 value: 'INTERMEDIATE',
-                                child: Text('Trung cap'),
+                                child: Text('Trung cấp'),
                               ),
                               DropdownMenuItem(
                                 value: 'ADVANCED',
-                                child: Text('Nang cao'),
+                                child: Text('Nâng cao'),
                               ),
                             ],
                             onChanged: (value) {
@@ -130,7 +130,7 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                         ),
                         const SizedBox(width: 14),
                         FilterChip(
-                          label: const Text('Mien phi'),
+                          label: const Text('Miễn phí'),
                           selected: _freeOnly,
                           onSelected: (value) {
                             setState(() => _freeOnly = value);
@@ -140,7 +140,7 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                         const SizedBox(width: 8),
                         TextButton(
                           onPressed: _clearFilters,
-                          child: const Text('Xoa loc'),
+                          child: const Text('Xóa lọc'),
                         ),
                       ],
                     ),
@@ -153,8 +153,8 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                 data: (state) {
                   if (state.courses.isEmpty) {
                     return const EmptyView(
-                      title: 'Khong co khoa hoc phu hop',
-                      message: 'Thu thay doi tu khoa hoac bo loc.',
+                      title: 'Không có khóa học phù hợp',
+                      message: 'Thử thay đổi từ khóa hoặc bộ lọc.',
                     );
                   }
                   return RefreshIndicator(
@@ -172,7 +172,7 @@ class _CourseListScreenState extends ConsumerState<CourseListScreen> {
                                 .read(courseListControllerProvider.notifier)
                                 .loadMore(),
                             icon: const Icon(Icons.expand_more),
-                            label: const Text('Tai them'),
+                            label: const Text('Tải thêm'),
                           );
                         }
                         final course = state.courses[index];

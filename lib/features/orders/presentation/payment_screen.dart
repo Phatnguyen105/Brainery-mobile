@@ -75,7 +75,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Thanh toan')),
+      appBar: AppBar(title: const Text('Thanh toán')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -92,22 +92,22 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     ),
                     const SizedBox(height: 14),
                     Text(
-                      'Don ${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
+                      'Đơn ${order.id.length > 8 ? order.id.substring(0, 8) : order.id}',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8),
                     _MoneyRow(
-                      label: 'Tong tien',
+                      label: 'Tổng tiền',
                       value: currency.format(order.totalAmount),
                     ),
                     if (order.discountAmount > 0)
                       _MoneyRow(
-                        label: 'Giam gia',
+                        label: 'Giảm giá',
                         value: '-${currency.format(order.discountAmount)}',
                       ),
                     const Divider(height: 24),
                     _MoneyRow(
-                      label: 'Can thanh toan',
+                      label: 'Cần thanh toán',
                       value: currency.format(order.finalPrice),
                       strong: true,
                     ),
@@ -120,7 +120,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 child: Text(
-                  'Chon phuong thuc thanh toan',
+                  'Chọn phương thức thanh toán',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -168,7 +168,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     color: selectedMethod.brandColor,
                   ),
                   title: Text(selectedMethod.title),
-                  subtitle: const Text('Thanh toan sandbox qua QR'),
+                  subtitle: const Text('Thanh toán sandbox qua QR'),
                   trailing: _StatusPill(
                     status: transaction.status,
                   ),
@@ -213,8 +213,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     ),
               label: Text(
                 transaction == null
-                    ? 'Tao QR ${selectedMethod.title}'
-                    : 'Mo scanner sandbox',
+                    ? 'Tạo QR ${selectedMethod.title}'
+                    : 'Mở scanner sandbox',
               ),
             ),
           ],
@@ -234,7 +234,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       return;
     }
     setState(() => _transaction = transaction);
-    _showSnack('Da tao yeu cau thanh toan sandbox.');
+    _showSnack('Đã tạo yêu cầu thanh toán sandbox.');
   }
 
   Future<void> _openSandboxScanner() async {
@@ -252,7 +252,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   Future<void> _confirmSandboxTransfer(TransactionModel transaction) async {
-    _showSnack('Dang gui webhook sandbox...');
+    _showSnack('Đang gửi webhook sandbox...');
 
     final confirmed = await ref
         .read(orderControllerProvider.notifier)
@@ -264,7 +264,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       return;
     }
     setState(() => _transaction = confirmed ?? transaction);
-    _showSnack('Sandbox da xac nhan giao dich.');
+    _showSnack('Sandbox đã xác nhận giao dịch.');
     context.go(RouteNames.learning);
   }
 
@@ -362,8 +362,8 @@ class _PayosSandboxScannerScreenState
               const SizedBox(height: 16),
               Text(
                 _scanning
-                    ? 'Dang doc QR sandbox...'
-                    : 'Scanner nay chi xac nhan giao dich sandbox, khong tao lenh chuyen tien that.',
+                    ? 'Đang đọc QR sandbox...'
+                    : 'Scanner này chỉ xác nhận giao dịch sandbox, không tạo lệnh chuyển tiền thật.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.white70),
               ),
@@ -379,7 +379,7 @@ class _PayosSandboxScannerScreenState
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(Icons.qr_code_scanner_outlined),
-                  label: Text(_scanning ? 'Dang quet' : 'Quet QR sandbox'),
+                  label: Text(_scanning ? 'Đang quét' : 'Quét QR sandbox'),
                 ),
               ),
             ],
@@ -503,11 +503,11 @@ class _PayosTransferCard extends StatelessWidget {
     final code = transaction.transactionCode ?? transaction.id;
     final qrUrl = _vietQrUrl(amount: amount, addInfo: code);
 
-    String instruction = 'Quet QR hoac chuyen khoan';
+    String instruction = 'Quét QR hoặc chuyển khoản';
     if (method.id == 'momo-sandbox') {
-      instruction = 'Quet QR sandbox qua vi MoMo';
+      instruction = 'Quét QR sandbox qua ví MoMo';
     } else if (method.id == 'vnpay-sandbox') {
-      instruction = 'Quet QR sandbox qua ung dung VNPay';
+      instruction = 'Quét QR sandbox qua ứng dụng VNPay';
     }
 
     return Card(
@@ -538,7 +538,7 @@ class _PayosTransferCard extends StatelessWidget {
                   foregroundColor: Colors.white,
                 ),
                 icon: const Icon(Icons.qr_code_scanner_outlined),
-                label: Text('Quet QR ${method.title}'),
+                label: Text('Quét QR ${method.title}'),
               ),
             ),
             const SizedBox(height: 14),
@@ -575,17 +575,17 @@ class _PayosTransferCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            _InfoRow(label: 'Ngan hang', value: AppConfig.paymentBankCode),
+            _InfoRow(label: 'Ngân hàng', value: AppConfig.paymentBankCode),
             _InfoRow(
-              label: 'So tai khoan',
+              label: 'Số tài khoản',
               value: AppConfig.paymentAccountNumber,
             ),
             _InfoRow(
-              label: 'Chu tai khoan',
+              label: 'Chủ tài khoản',
               value: AppConfig.paymentAccountName,
             ),
-            _InfoRow(label: 'So tien', value: amountText),
-            _InfoRow(label: 'Noi dung', value: code),
+            _InfoRow(label: 'Số tiền', value: amountText),
+            _InfoRow(label: 'Nội dung', value: code),
             if (transaction.checkoutUrl != null)
               _InfoRow(label: 'Checkout URL', value: transaction.checkoutUrl!),
           ],

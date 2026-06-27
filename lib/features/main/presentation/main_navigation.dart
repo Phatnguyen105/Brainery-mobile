@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../core/router/route_names.dart';
 import '../../auth/presentation/auth_controller.dart';
 import '../../cart/presentation/cart_screen.dart';
@@ -18,6 +19,13 @@ class MainNavigation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<bool>(authErrorTriggerProvider, (previous, next) {
+      if (next == true) {
+        ref.read(authControllerProvider.notifier).logout();
+        ref.read(authErrorTriggerProvider.notifier).reset();
+      }
+    });
+
     final auth = ref.watch(authControllerProvider);
     final isAdmin = auth.hasValue && (auth.requireValue?.isAdmin ?? false);
     final isInstructor =
@@ -39,33 +47,33 @@ class MainNavigation extends ConsumerWidget {
     final destinations = <NavigationDestination>[
       const NavigationDestination(
         icon: Icon(Icons.home_outlined),
-        label: 'Trang chu',
+        label: 'Trang chủ',
       ),
       const NavigationDestination(
         icon: Icon(Icons.school_outlined),
-        label: 'Hoc tap',
+        label: 'Học tập',
       ),
       const NavigationDestination(
         icon: Icon(Icons.favorite_outline),
-        label: 'Yeu thich',
+        label: 'Yêu thích',
       ),
       const NavigationDestination(
         icon: Icon(Icons.shopping_cart_outlined),
-        label: 'Gio hang',
+        label: 'Giỏ hàng',
       ),
       const NavigationDestination(
         icon: Icon(Icons.person_outline),
-        label: 'Ca nhan',
+        label: 'Cá nhân',
       ),
       if (isInstructor)
         const NavigationDestination(
           icon: Icon(Icons.co_present_outlined),
-          label: 'Giang vien',
+          label: 'Giảng viên',
         ),
       if (isAdmin)
         const NavigationDestination(
           icon: Icon(Icons.admin_panel_settings_outlined),
-          label: 'Quan tri',
+          label: 'Quản trị',
         ),
     ];
 

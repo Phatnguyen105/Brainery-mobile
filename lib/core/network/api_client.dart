@@ -6,6 +6,17 @@ import '../constants/api_constants.dart';
 import '../storage/token_storage.dart';
 import 'api_exception.dart';
 
+class AuthErrorTrigger extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void trigger() => state = true;
+  void reset() => state = false;
+}
+
+final authErrorTriggerProvider =
+    NotifierProvider<AuthErrorTrigger, bool>(AuthErrorTrigger.new);
+
 final dioProvider = Provider<Dio>((ref) {
   final storage = ref.watch(tokenStorageProvider);
   final dio = Dio(
@@ -58,7 +69,11 @@ final dioProvider = Provider<Dio>((ref) {
               }
             } catch (_) {
               await storage.clear();
+              ref.read(authErrorTriggerProvider.notifier).trigger();
             }
+          } else {
+            await storage.clear();
+            ref.read(authErrorTriggerProvider.notifier).trigger();
           }
         }
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/router/route_names.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../auth/presentation/auth_controller.dart';
 
@@ -21,47 +22,59 @@ class ProfileScreen extends ConsumerWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ca nhan')),
+      appBar: AppBar(title: const Text('Cá nhân')),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            CircleAvatar(
-              radius: 42,
-              child: Text(
-                (user?.fullName.isNotEmpty ?? false)
-                    ? user!.fullName.characters.first.toUpperCase()
-                    : 'B',
-                style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w800,
+            Center(
+              child: CircleAvatar(
+                radius: 42,
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                child: Text(
+                  (user?.fullName.isNotEmpty ?? false)
+                      ? user!.fullName.characters.first.toUpperCase()
+                      : 'B',
+                  style: const TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.primaryDark,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             Text(
-              user?.fullName ?? 'Hoc vien Brainery',
+              user?.fullName ?? 'Học viên Brainery',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 4),
             Text(user?.email ?? '', textAlign: TextAlign.center),
             const SizedBox(height: 28),
-            ListTile(
-              leading: const Icon(Icons.receipt_long_outlined),
-              title: const Text('Don hang'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(RouteNames.orders),
-            ),
-            ListTile(
-              leading: const Icon(Icons.devices_outlined),
-              title: const Text('Thiet bi'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push(RouteNames.devices),
+            Card(
+              elevation: 0.5,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.receipt_long_outlined, color: AppColors.primary),
+                    title: const Text('Đơn hàng'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push(RouteNames.orders),
+                  ),
+                  const Divider(height: 1, indent: 16, endIndent: 16),
+                  ListTile(
+                    leading: const Icon(Icons.devices_outlined, color: AppColors.primary),
+                    title: const Text('Thiết bị'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push(RouteNames.devices),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 24),
             AppButton(
-              label: 'Dang xuat',
+              label: 'Đăng xuất',
               icon: Icons.logout,
               isLoading: auth.isLoading,
               onPressed: () =>
